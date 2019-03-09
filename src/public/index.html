@@ -7,27 +7,24 @@
 </head>
 <body>
   <div class="container">
-    <div class="col-md-8">
-      <select id="type">
-        <option value="build.deck">Build Deck 54</option>
-        <option value="ping">Ping</option>
-        <option value="ping-error">Ping Error</option>
-        <option value="all">All</option>
-        <option value="clients">Clients</option>
-      </select>
-      <button class="btn btn-primary" id="send">Send</button>
-      <button class="btn btn-primary" id="ping">Send</button>
-      <button class="btn btn-primary" id="ping-error">Ping Error</button>
-    </div>
-    <div class="col-md-4">
-      <div id="messages"></div>
+    <div class="row">
+      <div class="col">
+        <select id="type">
+          <option value="build.deck">Build Deck 54</option>
+          <option selected value="ping">Ping</option>
+          <option value="ping-error">Ping Error</option>
+          <option value="all">All</option>
+          <option value="clients">Clients</option>
+        </select>
+        <button class="btn btn-primary" id="send">Send</button>
+        <button class="btn btn-primary" id="ping">Ping</button>
+        <button class="btn btn-primary" id="ping-error">Ping Error</button>
+      </div>
+      <div class="col">
+        <div id="messages"></div>
+      </div>
     </div>
 
   </div>
-  <script
-          src="https://code.jquery.com/jquery-3.2.1.min.js"
-          integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-          crossorigin="anonymous"></script>
-
 </body>
 </html>

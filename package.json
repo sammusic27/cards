@@ -4,8 +4,9 @@
   "description": "Test project",
   "scripts": {
     "build": "rimraf dist && webpack --bail --progress --profile",
-    "server": "webpack-dev-server --history-api-fallback --inline --progress",
-    "start": "npm run server"
+    "dev": "webpack-dev-server --history-api-fallback --inline --progress",
+    "server": "node ./server/app.js",
+    "start": "npm run server ; npm run dev"
   },
   "license": "MIT",
   "dependencies": {},

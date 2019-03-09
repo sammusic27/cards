@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/app.css';
 
-const socket = new WebSocket("ws://localhost:8081");
+const socket = new WebSocket("ws://localhost:3031");
 socket.onopen = function() {
     message("Соединение установлено.");
 };
@@ -29,6 +29,7 @@ socket.onmessage = function(event) {
 };
 
 socket.onerror = function(error) {
+    console.log(error);
     message("Ошибка " + error.message);
 };
 

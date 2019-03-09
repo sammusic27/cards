@@ -6,7 +6,7 @@ const clients = {};
 
 // WebSocket-сервер на порту 8081
 const webSocketServer = new WebSocketServer.Server({
-    port: 8081
+    port: 3031
 });
 webSocketServer.on('connection', function(ws) {
     const id = Math.random();
