@@ -28,7 +28,7 @@ const users = {
     // TODO: update unique model of unauthorized user
     const id = Math.random();
     if(this.unauthorized[id]){
-      messages.error('Error: this user already exists as unauthorized');
+      messages.error(ws, 'Error: this user already exists as unauthorized');
       return;
     }
 
@@ -38,15 +38,16 @@ const users = {
     return id;
   },
   authUser: function(ws, data){
-    const { id, login, pass } = data;
+    const { id, login, pass } = data.message;
     const found = db.find(u => u.login === login && u.pass === pass);
 
-    if(found){
+    if(found && this.unauthorized[id]){
       this.authorized[id] = this.unauthorized[id];
       this.authorized[id].data = found;
       delete this.unauthorized[id];
+      messages.send(ws, 'auth', found)
     } else {
-      messages.error('Error: Login or Password are not correct!');
+      messages.error(ws, 'Error: Login or Password are not correct!');
     }
 
     return !!found;
@@ -59,13 +60,13 @@ const users = {
       });
       return true;
     }
-    messages.error('Error: Can\'t create user.');
+    messages.error(ws, 'Error: Can\'t create user.');
     return false;
   },
   editUser: function(ws, data){
     const { id } = data;
     if(!this.authorized[id]){
-      messages.error('Error: You are not authorized');
+      messages.error(ws, 'Error: You are not authorized');
       return false;
     }
 
