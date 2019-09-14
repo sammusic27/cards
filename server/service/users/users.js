@@ -1,16 +1,24 @@
 const { messages } = require('../message');
+const cloneDeep = require('lodash/cloneDeep');
+const uniqueId = require('lodash/uniqueId');
 
 const ADMIN_ROLE = 'admin';
 const USER_ROLE = 'user';
 
+function getId(){
+  return uniqueId('user');
+}
+
 const db = [
   {
+    id: getId(),
     name: 'Admin',
     role: ADMIN_ROLE,
     login: 'admin',
     pass: 'admin',
   },
   {
+    id: getId(),
     name: 'Test User 1',
     role: USER_ROLE,
     login: 'test',
@@ -24,14 +32,8 @@ const users = {
   // methods
 
   // user authentication methods
-  initUser: function(ws){
-    // TODO: update unique model of unauthorized user
-    const id = Math.random();
-    if(this.unauthorized[id]){
-      messages.error(ws, 'Error: this user already exists as unauthorized');
-      return;
-    }
-
+  initConnection: function(ws){
+    const id = getId();
     this.unauthorized[id] = {
       ws
     };
@@ -39,55 +41,76 @@ const users = {
   },
   authUser: function(ws, data){
     const { id, login, pass } = data.message;
-    const found = db.find(u => u.login === login && u.pass === pass);
+    const userList = cloneDeep(db);
+    const found = userList.find(u => u.login === login && u.pass === pass);
 
     if(found && this.unauthorized[id]){
       this.authorized[id] = this.unauthorized[id];
       this.authorized[id].data = found;
       delete this.unauthorized[id];
-      messages.send(ws, 'auth', found)
+      messages.send(ws, 'users::auth', found);
     } else {
+      const message = 'Error: Login or Password are not correct!';
+      messages.error(ws, message);
+    }
+  },
+  getUsers: function(ws, data){
+    // TODO: make some sort or filters using data
+    messages.send(ws, 'users::list', this.authorized);
+  },
+  getUser: function(ws, data){
+    const userList = cloneDeep(db);
+    const { id } = data.message;
+    const found = userList.find(u => u.id === id);
+
+    if(!found){
       messages.error(ws, 'Error: Login or Password are not correct!');
+      return;
     }
 
-    return !!found;
+    messages.send(ws, 'users::one', found)
   },
-  createUser: function(ws, data){
-    if(data.name && data.login && data.pass){
-      db.push({
-        ...data,
+  create: function(ws, data){
+    const { name, login, pass } = data.message;
+    if(name && login && pass){
+      const userList = cloneDeep(db);
+      userList.push({
+        name,
+        login,
+        pass,
         role: USER_ROLE
       });
-      return true;
+      return;
     }
     messages.error(ws, 'Error: Can\'t create user.');
-    return false;
   },
-  editUser: function(ws, data){
-    const { id } = data;
+  update: function(ws, data){
+    const { id } = data.message;
+
     if(!this.authorized[id]){
       messages.error(ws, 'Error: You are not authorized');
-      return false;
+      return;
     }
 
-    const login = this.authorized[id].data.login;
-    const found = db.findIndex(u => u.login === login);
-    db[found] = data;
-    this.authorized[id].data = data;
+    const userList = cloneDeep(db);
+    const found = userList.findIndex(u => u.id === id);
+    userList[found] = data.message;
+    this.authorized[id].data = data.message;
   },
-  removeUser: function(ws, data){
-    const { id } = data;
+
+  delete: function(ws, data){
+    const { id } = data.message;
+
     if(!this.authorized[id]){
       delete this.unauthorized[id];
-      return false;
+      return;
     }
 
-    const login = this.authorized[id].data.login;
-    const found = db.findIndex(u => u.login === login);
-    delete db[found];
+    delete this.authorized[id];
+    const userList = cloneDeep(db);
+    const found = userList.findIndex(u => u.id === id);
+    delete userList[found];
   },
-
-
 
 };
 

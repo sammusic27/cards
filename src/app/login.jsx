@@ -1,15 +1,12 @@
 import React from 'react';
 import { Row, Col, Form, Button} from 'react-bootstrap';
+import {socket} from './services/socket';
 
 export class Login extends React.Component{
   constructor(props){
     super(props);
 
     this.state = {
-      form: {
-        login: '',
-        pass: ''
-      }
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -18,27 +15,26 @@ export class Login extends React.Component{
   handleSubmit(e){
     e.preventDefault();
 
-    const form = event.currentTarget;
+    const form = e.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
     }
 
-    this.props.send('user::auth', {
-      login: 'admin',
-      pass: 'admin',
+    socket.send('users::auth', {
+      login: form.login.value,
+      pass: form.pass.value,
+      id: this.props.id
     });
-    console.log(new FormData(form).values(), form.login.value);
   }
 
   render() {
-    const { form } = this.state;
     return  <Row className="justify-content-md-center">
               <Col>
                 <Form name="login" onSubmit={e => this.handleSubmit(e)}>
                   <Form.Group controlId="login">
                     <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
+                    <Form.Control type="text" placeholder="Enter email" defaultValue="admin" />
                     <Form.Text className="text-muted">
                       We'll never share your email with anyone else.
                     </Form.Text>
@@ -46,12 +42,12 @@ export class Login extends React.Component{
 
                   <Form.Group controlId="pass">
                     <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
+                    <Form.Control type="password" placeholder="Password" defaultValue="admin" />
                   </Form.Group>
                   <Form.Group controlId="saveMe">
                     <Form.Check type="checkbox" label="Save me" />
                   </Form.Group>
-                  <Button variant="primary" type="submit">
+                  <Button variant="primary" type="submit" disabled={!this.props.id}>
                     Login
                   </Button>
                 </Form>

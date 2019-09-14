@@ -6,6 +6,7 @@ const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const port = 3000;
 
 /**
  * Env
@@ -42,7 +43,7 @@ module.exports = function makeWebpackConfig() {
   config.output = isTest ? {} : {
     path: __dirname + '/dist',
 
-    publicPath: isProd ? '/' : 'http://localhost:8080/',
+    publicPath: isProd ? '/' : 'http://localhost:' + port,
 
     filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
 
@@ -173,7 +174,8 @@ module.exports = function makeWebpackConfig() {
    */
   config.devServer = {
     contentBase: './src/public',
-    stats: 'minimal'
+    stats: 'minimal',
+    port
   };
 
   return config;
