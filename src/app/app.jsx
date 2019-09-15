@@ -11,31 +11,33 @@ export class App extends React.Component{
         super(props);
 
         this.state = {
-            uniqueId: null,
             isAuth: false,
             user: null,
         };
 
         socket.init();
-        socket.listen('users::unauth', (userId) => {
-            this.setState({
-                uniqueId: userId
-            });
+
+        socket.listen('users::unauth', () => {
+            socket.user = null;
+            socket.token = null;
         });
         socket.listen('users::auth', (data) => {
+            socket.setUser(data.data);
+            socket.setToken(data.token);
+
             this.setState({
                 isAuth: true,
-                user: data
+                user: data.data
             });
         });
     }
 
     render(){
-        const { user, uniqueId, isAuth } = this.state;
+        const { user, isAuth } = this.state;
 
         return (<Container>
                     <AlertComponent />
-                    { isAuth ? <Dashboard user={user}/> : (<Login id={uniqueId} />)}
+                    { isAuth ? <Dashboard user={user}/> : (<Login />)}
                 </Container>);
     }
 }

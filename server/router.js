@@ -14,6 +14,14 @@ function router(ws, data){
   const path = data['$type'].split('::');
   data = { ...data, '$type': path[1]};
 
+  if(path[0] === 'users' && path[1] === 'auth'){
+    return users.authUser(ws, data);
+  }
+
+  if(!users.checkAuth(ws, data)){
+    return;
+  }
+
   switch(path[0]){
     case 'users': return usersRouter(ws, data);
     case 'dashboard': return dashboard(ws, data);

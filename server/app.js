@@ -23,9 +23,7 @@ webSocketServer.on('connection', function(ws) {
     ws.isAlive = true;
     ws.on('pong', heartbeat);
 
-    const id = users.initConnection(ws);
-    messages.send(ws,'users::unauth', id);
-    console.log('open connection', id);
+    console.log('open connection');
 
     ws.on('message', function(message) {
         const data = parseData(message);
@@ -40,8 +38,7 @@ webSocketServer.on('connection', function(ws) {
     });
 
     ws.on('close', function(err) {
-        console.log('close connection', id);
-        users.delete(ws, { message: { id } });
+        console.log('close connection');
     });
 
     ws.on('error', function (msg) {

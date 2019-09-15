@@ -24,7 +24,6 @@ export class Login extends React.Component{
     socket.send('users::auth', {
       login: form.login.value,
       pass: form.pass.value,
-      id: this.props.id
     });
   }
 
@@ -47,7 +46,7 @@ export class Login extends React.Component{
                   <Form.Group controlId="saveMe">
                     <Form.Check type="checkbox" label="Save me" />
                   </Form.Group>
-                  <Button variant="primary" type="submit" disabled={!this.props.id}>
+                  <Button variant="primary" type="submit">
                     Login
                   </Button>
                 </Form>
